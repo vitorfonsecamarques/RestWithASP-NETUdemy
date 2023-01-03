@@ -2,13 +2,13 @@
 using RestWithAspNetUdemy.Model;
 using RestWithAspNetUdemy.Model.Context;
 
-namespace RestWithAspNetUdemy.Services.Implementations
+namespace RestWithAspNetUdemy.Repository.Implementations
 {
-    public class PersonServiceImplementation : IPersonService
+    public class PersonRepositoryImplementation : IPersonRepository
     {
         private MySqlContext _context;
 
-        public PersonServiceImplementation(MySqlContext context) 
+        public PersonRepositoryImplementation(MySqlContext context) 
         {
             _context = context;    
         }
@@ -40,7 +40,7 @@ namespace RestWithAspNetUdemy.Services.Implementations
 
         public Person Update(Person person)
         {
-            if (!Exists(person.Id)) return new Person();
+            if (!Exists(person.Id)) return null;
 
             var result = _context.Persons.SingleOrDefault(p => p.Id.Equals(person.Id));
 
