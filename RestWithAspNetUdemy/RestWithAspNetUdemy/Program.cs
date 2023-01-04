@@ -1,4 +1,5 @@
 using EvolveDb;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using RestWithAspNetUdemy.Business;
 using RestWithAspNetUdemy.Business.Implementations;
@@ -41,6 +42,20 @@ builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connecti
 
 //Versioning API
 builder.Services.AddApiVersioning();
+builder.Services.AddSwaggerGen(c => {
+	c.SwaggerDoc("v1",
+		new Microsoft.OpenApi.Models.OpenApiInfo
+		{
+			Title = "REST API's From 0 to Azure with ASP.NET Core 5 and Docker",
+			Version = "v1",
+			Description = "API RESTFUL developed in course 'REST API's From 0 to Azure with ASP.NET Core 5 and Docker'",
+			Contact = new Microsoft.OpenApi.Models.OpenApiContact
+			{
+				Name = "Vitor Fonseca",
+				Url = new Uri("https://github.com/vitorfonsecamarques")
+			}
+        });
+});
 
 //Dependency Injection
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
@@ -59,6 +74,14 @@ if (environment.IsDevelopment())
 {
     MigrateDatabase(connectionString);
 }
+
+app.UseSwagger();
+app.UseSwaggerUI(c => {
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", 
+		"API RESTFUL developed in course 'REST API's From 0 to Azure with ASP.NET Core 5 and Docker - v1");
+});
+
+app.UseRewriter(new Microsoft.AspNetCore.Rewrite.RewriteOptions().AddRedirect("^$", "swagger"));
 
 void MigrateDatabase(string connection)
 {
