@@ -2,6 +2,8 @@ using EvolveDb;
 using Microsoft.EntityFrameworkCore;
 using RestWithAspNetUdemy.Business;
 using RestWithAspNetUdemy.Business.Implementations;
+using RestWithAspNetUdemy.Hypermedia.Enricher;
+using RestWithAspNetUdemy.Hypermedia.Filters;
 using RestWithAspNetUdemy.Model.Context;
 using RestWithAspNetUdemy.Repository.Generic;
 using Serilog;
@@ -28,6 +30,12 @@ builder.Services.AddMvc(options =>
     options.FormatterMappings.SetMediaTypeMappingForFormat("json", "application/json");
 })
 .AddXmlSerializerFormatters();
+
+var filterOptions = new HyperMediaFilterOptions();
+filterOptions.ContentResponseEnricherList.Add(new PersonEnricher());
+filterOptions.ContentResponseEnricherList.Add(new BookEnricher());
+
+builder.Services.AddSingleton(filterOptions);
 
 builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
@@ -73,5 +81,6 @@ void MigrateDatabase(string connection)
 }
 
 app.MapControllers();
+app.MapControllerRoute("DefaultApi", "{controller=values}/{id?}");
 
 app.Run();

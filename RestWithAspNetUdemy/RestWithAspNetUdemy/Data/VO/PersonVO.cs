@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using RestWithAspNetUdemy.Hypermedia;
+using RestWithAspNetUdemy.Hypermedia.Abstract;
 
 namespace RestWithAspNetUdemy.Data.VO
 {
-    public class PersonVO
+    public class PersonVO : ISupportHyperMedia
     {
         //[JsonPropertyName("code")]
         public long Id { get; set; }
@@ -10,5 +11,7 @@ namespace RestWithAspNetUdemy.Data.VO
         public string LastName { get; set; }
         public string Adress { get; set; }
         public string Gender { get; set; }
+
+        public List<HyperMediaLink> Links { get; set; } = new List<HyperMediaLink>();
     }
 }
