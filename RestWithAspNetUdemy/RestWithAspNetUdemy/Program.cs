@@ -20,6 +20,15 @@ IWebHostEnvironment environment = builder.Environment;
 
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
 
+builder.Services.AddMvc(options =>
+{
+    options.RespectBrowserAcceptHeader = true;
+
+    options.FormatterMappings.SetMediaTypeMappingForFormat("xml", "application/xml");
+    options.FormatterMappings.SetMediaTypeMappingForFormat("json", "application/json");
+})
+.AddXmlSerializerFormatters();
+
 builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 //Versioning API
