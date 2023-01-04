@@ -1,14 +1,13 @@
 ﻿using RestWithAspNetUdemy.Model;
-using RestWithAspNetUdemy.Model.Context;
-using RestWithAspNetUdemy.Repository;
+using RestWithAspNetUdemy.Repository.Generic;
 
 namespace RestWithAspNetUdemy.Business.Implementations
 {
     public class BookBusinessImplementation : IBookBusiness
     {
-        private readonly IBookRepository _repository;
+        private readonly IRepository<Book> _repository;
 
-        public BookBusinessImplementation(IBookRepository repository) 
+        public BookBusinessImplementation(IRepository<Book> repository) 
         {
             _repository = repository;    
         }

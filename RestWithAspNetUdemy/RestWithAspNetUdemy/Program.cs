@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using RestWithAspNetUdemy.Business;
 using RestWithAspNetUdemy.Business.Implementations;
 using RestWithAspNetUdemy.Model.Context;
-using RestWithAspNetUdemy.Repository;
-using RestWithAspNetUdemy.Repository.Implementations;
+using RestWithAspNetUdemy.Repository.Generic;
 using Serilog;
-using System.Linq.Expressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,10 +26,9 @@ builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connecti
 builder.Services.AddApiVersioning();
 
 //Dependency Injection
-builder.Services.AddScoped<IPersonRepository, PersonRepositoryImplementation>();
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
-builder.Services.AddScoped<IBookRepository, BookRepositoryImplementation>();
 builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
 var app = builder.Build();
 
