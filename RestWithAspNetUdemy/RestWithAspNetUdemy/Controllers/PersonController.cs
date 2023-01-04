@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestWithAspNetUdemy.Business;
-using RestWithAspNetUdemy.Model;
+using RestWithAspNetUdemy.Data.VO;
 
 namespace RestWithAspNetUdemy.Controllers
 {
@@ -33,14 +33,14 @@ namespace RestWithAspNetUdemy.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Person person)
+        public IActionResult Post([FromBody] PersonVO person)
         {
             if (person == null) return BadRequest();
             return Ok(_personBusiness.Create(person));
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Person person)
+        public IActionResult Update([FromBody] PersonVO person)
         {
             if (person == null) return BadRequest();
             return Ok(_personBusiness.Update(person));
