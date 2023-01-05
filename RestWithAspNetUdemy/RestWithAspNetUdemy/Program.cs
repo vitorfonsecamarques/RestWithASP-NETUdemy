@@ -1,17 +1,65 @@
 using EvolveDb;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using RestWithAspNetUdemy.Business;
 using RestWithAspNetUdemy.Business.Implementations;
+using RestWithAspNetUdemy.Configurations;
 using RestWithAspNetUdemy.Hypermedia.Enricher;
 using RestWithAspNetUdemy.Hypermedia.Filters;
 using RestWithAspNetUdemy.Model.Context;
+using RestWithAspNetUdemy.Repository;
 using RestWithAspNetUdemy.Repository.Generic;
+using RestWithAspNetUdemy.Services;
+using RestWithAspNetUdemy.Services.Implementations;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var tokenConfigurations = new TokenConfiguration();
+
+new ConfigureFromConfigurationOptions<TokenConfiguration>(
+        builder.Configuration.GetSection("TokenConfigurations")
+	).Configure(tokenConfigurations);
+
+builder.Services.AddSingleton(tokenConfigurations);
+builder.Services.AddAuthentication(options => 
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options => 
+{
+	options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+	{
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		ValidIssuer = tokenConfigurations.Issuer,
+		ValidAudience = tokenConfigurations.Audience,
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenConfigurations.Secret))
+	};
+});
+
+builder.Services.AddAuthorization(auth =>
+{
+	auth.AddPolicy("Bearer", new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
+		.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+		.RequireAuthenticatedUser().Build());
+});
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(builder2 => 
+{
+	builder2.AllowAnyOrigin()
+	.AllowAnyMethod()
+	.AllowAnyHeader();
+}));
 
 builder.Services.AddControllers();
 
@@ -60,6 +108,12 @@ builder.Services.AddSwaggerGen(c => {
 //Dependency Injection
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
 builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
+builder.Services.AddTransient<ILoginBusiness, LoginBusinessImplementation>();
+
+builder.Services.AddTransient<ITokenService, TokenService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
 var app = builder.Build();
@@ -74,6 +128,8 @@ if (environment.IsDevelopment())
 {
     MigrateDatabase(connectionString);
 }
+
+app.UseCors();
 
 app.UseSwagger();
 app.UseSwaggerUI(c => {

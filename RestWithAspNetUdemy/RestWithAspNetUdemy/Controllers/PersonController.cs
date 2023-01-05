@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestWithAspNetUdemy.Business;
 using RestWithAspNetUdemy.Data.VO;
@@ -7,6 +8,7 @@ namespace RestWithAspNetUdemy.Controllers
 {
     [ApiVersion("1")]
     [ApiController]
+    [Authorize("Bearer")]
     [Route("api/[controller]/v{version:apiVersion}")]
     public class PersonController : ControllerBase
     {
