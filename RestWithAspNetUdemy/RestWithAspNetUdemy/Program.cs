@@ -2,6 +2,7 @@ using EvolveDb;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RestWithAspNetUdemy.Business;
@@ -106,9 +107,12 @@ builder.Services.AddSwaggerGen(c => {
 });
 
 //Dependency Injection
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
 builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
 builder.Services.AddTransient<ILoginBusiness, LoginBusinessImplementation>();
+builder.Services.AddTransient<IFileBusiness, FileBusinessImplementation>();
 
 builder.Services.AddTransient<ITokenService, TokenService>();
 
