@@ -129,10 +129,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-if (environment.IsDevelopment())
-{
-    MigrateDatabase(connectionString);
-}
+//if (environment.IsDevelopment())
+//{
+//	MigrateDatabase(connectionString);
+//}
 
 app.UseCors();
 
